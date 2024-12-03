@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
-from app.config_master import Config
+from app.config_node2 import Config
 from sqlalchemy import Column, String, Float, Date
 from sqlalchemy.sql import text
 from datetime import datetime
