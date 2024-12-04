@@ -1,6 +1,6 @@
 class Config:
-    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root:12345@127.0.0.1:3307/steamGames"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://root2:VDxdc5yWSYNtjv8hXaJ27bP4@ccscloud.dlsu.edu.ph:20122/steamGames"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_BINDS = {
-    'master': 'mysql+pymysql://root:12345@127.0.0.1:3307/steamGames'  
+        'master': 'mysql+pymysql://root2:VDxdc5yWSYNtjv8hXaJ27bP4@ccscloud.dlsu.edu.ph:20122/steamGames'  
     }
