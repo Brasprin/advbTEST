@@ -36,8 +36,7 @@ def create_game():
         # Set transaction isolation level to REPEATABLE READ
         session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
-        # Simulate processing delay using SQL SLEEP
-        session.execute(text(f"SELECT SLEEP({delay_seconds})"))
+
         
         # Get the data from the request
         data = request.json
@@ -67,6 +66,9 @@ def create_game():
             'price': price,
             'releasedate_cleaned': releasedate_cleaned
         })
+
+        # Simulate processing delay using SQL SLEEP
+        session.execute(text(f"SELECT SLEEP({delay_seconds})"))
         session.commit()
 
         return jsonify({"message": "Game created successfully!"})
@@ -157,9 +159,6 @@ def update_game():
         # Set transaction isolation level to REPEATABLE READ
         session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
-        # Simulate processing delay using SQL SLEEP
-        session.execute(text(f"SELECT SLEEP({delay_seconds})"))
-        
         data = request.json
         appid = data.get('appid')
         name = data.get('name')  
@@ -194,6 +193,8 @@ def update_game():
         params["appid"] = appid
 
         session.execute(text(query), params)
+        # Simulate processing delay using SQL SLEEP
+        session.execute(text(f"SELECT SLEEP({delay_seconds})"))
         session.commit()
         return jsonify({"message": "Game updated successfully!"})
 
@@ -214,8 +215,7 @@ def delete_game():
         # Set transaction isolation level to REPEATABLE READ
         session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
-        # Simulate processing delay using SQL SLEEP
-        session.execute(text(f"SELECT SLEEP({delay_seconds})"))
+
         
         data = request.json
         appid = data.get('appid')
@@ -226,6 +226,8 @@ def delete_game():
 
         sql = "DELETE FROM steamGames WHERE appid = :appid"
         session.execute(text(sql), {'appid': appid})
+                # Simulate processing delay using SQL SLEEP
+        session.execute(text(f"SELECT SLEEP({delay_seconds})"))
         session.commit()
 
         return jsonify({"message": "Game deleted successfully!"})

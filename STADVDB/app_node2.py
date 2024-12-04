@@ -36,6 +36,8 @@ def create_game():
         # Set transaction isolation level to REPEATABLE READ
         session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
+
+        
         # Get the data from the request
         data = request.json
         appid = data.get('appid')
@@ -57,7 +59,6 @@ def create_game():
                 session.close()
                 return jsonify({"error": "Invalid date format. Please use 'YYYY-MM-DD'"}), 400
 
-        # Prepare the insert statement
         sql = "INSERT INTO steamGames (appid, name, price, releasedate_cleaned) VALUES (:appid, :name, :price, :releasedate_cleaned)"
         session.execute(text(sql), {
             'appid': appid,
@@ -65,12 +66,9 @@ def create_game():
             'price': price,
             'releasedate_cleaned': releasedate_cleaned
         })
-        
-        # Simulate processing delay BEFORE committing
-        print(f"Sleeping for {delay_seconds} seconds before commit...")
+
+        # Simulate processing delay using SQL SLEEP
         session.execute(text(f"SELECT SLEEP({delay_seconds})"))
-        
-        # Commit the transaction
         session.commit()
 
         return jsonify({"message": "Game created successfully!"})
@@ -194,14 +192,9 @@ def update_game():
         query += " WHERE appid = :appid"
         params["appid"] = appid
 
-        # Execute the update
         session.execute(text(query), params)
-        
-        # Simulate processing delay BEFORE committing
-        print(f"Sleeping for {delay_seconds} seconds before commit...")
+        # Simulate processing delay using SQL SLEEP
         session.execute(text(f"SELECT SLEEP({delay_seconds})"))
-        
-        # Commit the transaction
         session.commit()
         return jsonify({"message": "Game updated successfully!"})
 
@@ -222,6 +215,8 @@ def delete_game():
         # Set transaction isolation level to REPEATABLE READ
         session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
+
+        
         data = request.json
         appid = data.get('appid')
 
@@ -229,15 +224,10 @@ def delete_game():
             session.close()
             return jsonify({"error": "appid is required"}), 400
 
-        # Prepare delete statement
         sql = "DELETE FROM steamGames WHERE appid = :appid"
         session.execute(text(sql), {'appid': appid})
-        
-        # Simulate processing delay BEFORE committing
-        print(f"Sleeping for {delay_seconds} seconds before commit...")
+        # Simulate processing delay using SQL SLEEP
         session.execute(text(f"SELECT SLEEP({delay_seconds})"))
-        
-        # Commit the transaction
         session.commit()
 
         return jsonify({"message": "Game deleted successfully!"})
@@ -248,18 +238,7 @@ def delete_game():
     finally:
         session.close()
 
-@app.route('/server-status', methods=['GET'])
-def database_status():
-    session = Session()
-    try:
-        # Querying from the central database (master)
-        result = session.execute(text("SELECT DATABASE();"))
-        master_db = [row[0] for row in result]
-        return jsonify({"status": "connected", "database": master_db})
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)})
-    finally:
-        session.close()
+
 
 if __name__ == '__main__':
     app.run(debug=True,port=5002)
