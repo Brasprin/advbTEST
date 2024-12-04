@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 
-# Configure session to use READ UNCOMMITTED isolation level
+# Configure session to use repeatable read isolation level
 from sqlalchemy import create_engine
 engine = create_engine(app.config['SQLALCHEMY_DATABASE_URI'])
 Session = sessionmaker(bind=engine, autocommit=False, autoflush=False)
@@ -33,8 +33,8 @@ def create_game():
     
     session = Session()
     try:
-        # Set transaction isolation level to READ UNCOMMITTED
-        session.execute(text("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED"))
+        # Set transaction isolation level to REPEATABLE READ
+        session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
         # Simulate processing delay using SQL SLEEP
         session.execute(text(f"SELECT SLEEP({delay_seconds})"))
@@ -85,8 +85,8 @@ def read_games():
     
     session = Session()
     try:
-        # Set transaction isolation level to READ UNCOMMITTED
-        session.execute(text("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED"))
+        # Set transaction isolation level to REPEATABLE READ
+        session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
         # Simulate processing delay using SQL SLEEP
         session.execute(text(f"SELECT SLEEP({delay_seconds})"))
@@ -154,8 +154,8 @@ def update_game():
     
     session = Session()
     try:
-        # Set transaction isolation level to READ UNCOMMITTED
-        session.execute(text("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED"))
+        # Set transaction isolation level to REPEATABLE READ
+        session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
         # Simulate processing delay using SQL SLEEP
         session.execute(text(f"SELECT SLEEP({delay_seconds})"))
@@ -211,8 +211,8 @@ def delete_game():
     
     session = Session()
     try:
-        # Set transaction isolation level to READ UNCOMMITTED
-        session.execute(text("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED"))
+        # Set transaction isolation level to REPEATABLE READ
+        session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ"))
         
         # Simulate processing delay using SQL SLEEP
         session.execute(text(f"SELECT SLEEP({delay_seconds})"))
@@ -236,6 +236,18 @@ def delete_game():
     finally:
         session.close()
 
+@app.route('/server-status', methods=['GET'])
+def database_status():
+    session = Session()
+    try:
+        # Querying from the central database (master)
+        result = session.execute(text("SELECT DATABASE();"))
+        master_db = [row[0] for row in result]
+        return jsonify({"status": "connected", "database": master_db})
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)})
+    finally:
+        session.close()
 
 if __name__ == '__main__':
     app.run(debug=True,port=5000)
